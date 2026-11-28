@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -11,10 +12,11 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ChatPage from './Components/ChatPage';
 
 const Stack = createNativeStackNavigator();
 
-function HomePage() {
+function HomePage({ navigation }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +50,13 @@ function HomePage() {
           data={users}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.contact} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.contact}
+              activeOpacity={0.7}
+              onPress={() =>
+                navigation.navigate('Chat', { user: item })
+              }
+            >
               <Image source={{ uri: item.image }} style={styles.avatar} />
 
               <View style={styles.details}>
@@ -83,6 +91,24 @@ export default function App() {
           name="Home"
           component={HomePage}
           options={{ title: 'WhatsApp' }}
+        />
+
+        <Stack.Screen
+          name="Chat"
+          component={ChatPage}
+          options={({ route }) => ({
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Image
+                  source={{ uri: route.params.user.image }}
+                  style={{ width: 36, height: 36, borderRadius: 18 }}
+                />
+                <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>
+                  {route.params.user.firstName} {route.params.user.lastName}
+                </Text>
+              </View>
+            ),
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
